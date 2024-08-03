@@ -1,8 +1,11 @@
 from django.urls import path
-from .views import ArtistViewSet, AlbomViewSet, SongViewSet
+from .views import ArtistListAPIView, ArtistDetailAPIView, AlbomListAPIView, AlbomDetailAPIView, SongListAPIView, SongDetailAPIView
 
 urlpatterns = [
-    path('artist/', ArtistViewSet.as_view(), name='artist'),
-    path('albom/', AlbomViewSet.as_view(), name='albom'),
-    path('song/', SongViewSet.as_view(), name='song'),
+    path('artists/', ArtistListAPIView.as_view(), name='artist-list'),
+    path('artists/<int:id>/', ArtistDetailAPIView.as_view(), name='artist-detail'),
+    path('alboms/', AlbomListAPIView.as_view(), name='albom-list'),
+    path('alboms/<int:id>/', AlbomDetailAPIView.as_view(), name='albom-detail'),
+    path('songs/', SongListAPIView.as_view(), name='song-list'),
+    path('songs/<int:id>/', SongDetailAPIView.as_view(), name='song-detail'),
 ]
