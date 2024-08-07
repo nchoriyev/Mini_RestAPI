@@ -7,7 +7,11 @@ from .serializers import ArtistSerializer, AlbomSerializer, SongSerializer
 
 class ArtistListAPIView(APIView):
     def get(self, request):
-        queryset = Artist.objects.all()
+        query = request.query_params.get('q')
+        if query:
+            queryset = Artist.objects.filter(name__icontains=query)
+        else:
+            queryset = Artist.objects.all()
         serializer = ArtistSerializer(queryset, many=True)
         return Response(data=serializer.data)
 
@@ -48,10 +52,18 @@ class ArtistDetailAPIView(APIView):
 
 
 class AlbomListAPIView(APIView):
+    def get_queryset(self):
+        return Albom.objects.all()
+
     def get(self, request):
-        queryset = Albom.objects.all()
-        serializer = AlbomSerializer(queryset, many=True)
+        query = self.get_queryset()
+        search_data = request.query_params.get('search')
+        if search_data is not None:
+            query = query.filter(name__icontains=search_data)
+
+        serializer = AlbomSerializer(query, many=True)
         return Response(data=serializer.data)
+
 
     def post(self, request):
         serializer = AlbomSerializer(data=request.data)
@@ -90,11 +102,17 @@ class AlbomDetailAPIView(APIView):
 
 
 class SongListAPIView(APIView):
-    def get(self, request):
-        queryset = Song.objects.all()
-        serializer = SongSerializer(queryset, many=True)
-        return Response(data=serializer.data)
+    def get_queryset(self):
+        return Song.objects.all()
 
+    def get(self, request):
+        query = self.get_queryset()
+        search_data = request.query_params.get('search')
+        if search_data is not None:
+            query = query.filter(name__icontains=search_data)
+
+        serializer = SongSerializer(query, many=True)
+        return Response(data=serializer.data)
     def post(self, request):
         serializer = SongSerializer(data=request.data)
         if serializer.is_valid():
